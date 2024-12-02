@@ -5,6 +5,7 @@ from pymongo.server_api import ServerApi
 # Connect to MongoDB database
 def connect_to_mongo():
     # Replace the uri string with your MongoDB deployment's connection string
+    # TODO: REPLACE WITH YOUR OWN CONNECTION STRING, DO NOT SHARE WITH ANYONE
     uri = "mongodb+srv://hao:hao1234@cluster0.15uea.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 
     # Create a new client and connect to the server
@@ -16,6 +17,7 @@ def connect_to_mongo():
         print("Pinged your deployment. You successfully connected to MongoDB!")
 
         # Specify the database and collection
+        # TODO: REPLACE WITH YOUR OWN DATABASE AND COLLECTION NAME
         db = client['test']  # Replace with your database name
         collection = db['MacandCheese_virtual']  # Replace with your collection name
 
@@ -75,10 +77,17 @@ def start_tcp_server():
             if received_message.lower() == 'exit' or received_message == '':
                 print("Shutting down server on 'exit' command.")
                 serverIsOn = False
-
+            # TODO: Add your own logic here to handle each kind of query
             else:
                 # Send back the received message in uppercase
                 incomingSocket.send(bytearray(received_message.upper(), encoding='utf-8'))
+                if received_message == "1":
+                    pass
+                elif received_message == "2":
+                    pass
+                elif received_message == "3":
+                    pass
+
 
     except Exception as e:
         print(f"An error occurred: {e}")
