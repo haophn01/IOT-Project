@@ -1,8 +1,41 @@
 import socket
 from pymongo.mongo_client import MongoClient
-from pymongo.server_ai import ServerApi
+from pymongo.server_api import ServerApi
 
+# Connect to MongoDB database
+def connect_to_mongo():
+    uri = "mongodb+srv://hao:hao1234@cluster0.15uea.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+
+    # Create a new client and connect to the server
+    client = MongoClient(uri, server_api=ServerApi('1'))
+
+    try:
+        # Test the connection
+        client.admin.command('ping')
+        print("Pinged your deployment. You successfully connected to MongoDB!")
+
+        # Specify the database and collection
+        db = client['test']  # Replace with your database name
+        collection = db['MacandCheese_virtual']  # Replace with your collection name
+
+        # Test the collection
+        collection.find_one()  # This ensures the collection is accessible
+        return collection
+
+    except Exception as e:
+        print("Failed during MongoDB setup:")
+        print(e)
+        return None
+
+
+# Start the TCP server
 def start_tcp_server():
+    # Call the database MongoDB
+    collection = connect_to_mongo()
+    if collection is None:
+        print("MongoDB connection failed. Server will not start.")
+        return 
+        
     myTCPSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     try:

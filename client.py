@@ -28,14 +28,17 @@ def start_tcp_client():
             print(prompt3)
 
             # Obtain message from user
-            user_message = input("Please enter message to send (or type 'exit' to quit): ")
+            user_message = input("Please enter 1, 2 or 3 to send (or type 'exit' to quit): ")
 
             # If the user types 'exit' or presses Enter with no message, break the loop
             if user_message.lower() == 'exit' or user_message == '':
                 print("Exiting now...")
                 clientIsOn = False
                 break
-
+            # If the user types anything other than 1, 2, or 3, proceed to the next iteration
+            if user_message not in ['1', '2', '3', 'exit', '']:
+                print("Please enter 1, 2, 3 or exit.")
+                continue
             # Send the message to the server
             myTCPSocket.send(bytearray(user_message, encoding='utf-8'))
 
