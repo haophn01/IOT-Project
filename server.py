@@ -1,6 +1,7 @@
 import socket
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
+from prompt1 import prompt1
 
 # Connect to MongoDB database
 def connect_to_mongo():
@@ -82,7 +83,7 @@ def start_tcp_server():
                 # Send back the received message in uppercase
                 incomingSocket.send(bytearray(received_message.upper(), encoding='utf-8'))
                 if received_message == "1":
-                    pass
+                    prompt1()
                 elif received_message == "2":
                     pass
                 elif received_message == "3":
