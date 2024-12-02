@@ -4,6 +4,7 @@ from pymongo.server_api import ServerApi
 
 # Connect to MongoDB database
 def connect_to_mongo():
+    # Replace the uri string with your MongoDB deployment's connection string
     uri = "mongodb+srv://hao:hao1234@cluster0.15uea.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 
     # Create a new client and connect to the server
