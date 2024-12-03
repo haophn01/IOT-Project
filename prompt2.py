@@ -26,10 +26,11 @@ def prompt2():
         pipeline_watersensor = [
             {"$match": {
                 "payload.YF-S201 - watersensor": {"$exists": True},
-                # "time": {"$gte": three_hours_ago_utc}
+                "time": {"$gte": three_hours_ago_utc}
             }},
             {"$addFields": {
-                "numeric-value": {"$toDouble": "$payload.YF-S201 - watersensor"}
+                "numeric-value": {"$toDouble": "$payload.YF-S201 - watersensor"},
+                "timestamp_pst": {"$dateToString": {"format": "%Y-%m-%d %H:%M:%S", "date": "$time", "timezone": "America/Los_Angeles"}}
             }},
             {"$group": {
                 "_id": None,
@@ -55,9 +56,9 @@ def prompt2():
 
         # Print results
         output = (
-        f"Results in PST (Pacific Standard Time): {pst_now.strftime('%Y-%m-%d %H:%M:%S')}"
-        f"Average water consumption for the dishwasher: {dht11_average:.10f}"
-        f"Overall average: {overall_average:.10f}"
+        f"\n\nResults in PST (Pacific Standard Time): {pst_now.strftime('%Y-%m-%d %H:%M:%S')}\n"
+        f"Average water consumption for the dishwasher: {dht11_average:.10f}\n"
+        f"Overall average: {overall_average:.10f}\n"
         )
         return output
 

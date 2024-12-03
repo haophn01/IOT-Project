@@ -26,10 +26,11 @@ def prompt1():
         pipeline_dht11 = [
             {"$match": {
                 "payload.DHT11 - moisture": {"$exists": True},
-                # "time": {"$gte": three_hours_ago_utc}
+                "time": {"$gte": three_hours_ago_utc}
             }},
             {"$addFields": {
-                "numeric-value": {"$toDouble": "$payload.DHT11 - moisture"}
+                "numeric-value": {"$toDouble": "$payload.DHT11 - moisture"},
+                "timestamp_pst": {"$dateToString": {"format": "%Y-%m-%d %H:%M:%S", "date": "$time", "timezone": "America/Los_Angeles"}}
             }},
             {"$group": {
                 "_id": None,
@@ -42,10 +43,11 @@ def prompt1():
         pipeline_sensor3 = [
             {"$match": {
                 "payload.sensor 3 637f4c4f-d074-4f27-9bfc-72d7231211ec": {"$exists": True},
-                # "time": {"$gte": three_hours_ago_utc}
+                "time": {"$gte": three_hours_ago_utc}
             }},
             {"$addFields": {
-                "numeric-value": {"$toDouble": "$payload.sensor 3 637f4c4f-d074-4f27-9bfc-72d7231211ec"}
+                "numeric-value": {"$toDouble": "$payload.sensor 3 637f4c4f-d074-4f27-9bfc-72d7231211ec"},
+                "timestamp_pst": {"$dateToString": {"format": "%Y-%m-%d %H:%M:%S", "date": "$time", "timezone": "America/Los_Angeles"}}
             }},
             {"$group": {
                 "_id": None,
@@ -75,10 +77,10 @@ def prompt1():
 
         # Format the results as a string
         output = (
-            f"Results in PST (Pacific Standard Time): {pst_now.strftime('%Y-%m-%d %H:%M:%S')}\n"
-            f"Average moisture for DHT11 - moisture: {dht11_average:.10f}"
-            f"Average moisture for sensor 3: {sensor3_average:.10f}"
-            f"Overall average moisture: {overall_average:.10f}"
+            f"\nResults in PST (Pacific Standard Time): {pst_now.strftime('%Y-%m-%d %H:%M:%S')}\n"
+            f"Average moisture for DHT11 - moisture: {dht11_average:.10f}\n"
+            f"Average moisture for sensor 3: {sensor3_average:.10f}\n"
+            f"Overall average moisture: {overall_average:.10f}\n"
         )
         return output
     except Exception as e:

@@ -27,10 +27,11 @@ def prompt3():
         fridge1_query = [
             {"$match": {
                 "payload.ACS712 - Anmeter": {"$exists": True},
-                # "time": {"$gte": three_hours_ago_utc}
+                "time": {"$gte": three_hours_ago_utc}
             }},
             {"$addFields": {
-                "numeric-value": {"$toDouble": "$payload.ACS712 - Anmeter"}
+                "numeric-value": {"$toDouble": "$payload.ACS712 - Anmeter"},
+                "timestamp_pst": {"$dateToString": {"format": "%Y-%m-%d %H:%M:%S", "date": "$time", "timezone": "America/Los_Angeles"}}
             }},
             {"$group": {
                 "_id": None,
@@ -43,10 +44,11 @@ def prompt3():
         fridge2_query = [
             {"$match": {
                 "payload.sensor 2 637f4c4f-d074-4f27-9bfc-72d7231211ec": {"$exists": True},
-                # "time": {"$gte": three_hours_ago_utc}
+                "time": {"$gte": three_hours_ago_utc}
             }},
             {"$addFields": {
-                "numeric-value": {"$toDouble": "$payload.sensor 2 637f4c4f-d074-4f27-9bfc-72d7231211ec"}
+                "numeric-value": {"$toDouble": "$payload.sensor 2 637f4c4f-d074-4f27-9bfc-72d7231211ec"},
+                "timestamp_pst": {"$dateToString": {"format": "%Y-%m-%d %H:%M:%S", "date": "$time", "timezone": "America/Los_Angeles"}}
             }},
             {"$group": {
                 "_id": None,
@@ -59,10 +61,11 @@ def prompt3():
         dishwasher_query = [
             {"$match": {
                 "payload.sensor 2 956b7932-b559-4cfc-8ba6-153d69083a9f": {"$exists": True},
-                # "time": {"$gte": three_hours_ago_utc}
+                "time": {"$gte": three_hours_ago_utc}
             }},
             {"$addFields": {
-                "numeric-value": {"$toDouble": "$payload.sensor 2 956b7932-b559-4cfc-8ba6-153d69083a9f"}
+                "numeric-value": {"$toDouble": "$payload.sensor 2 956b7932-b559-4cfc-8ba6-153d69083a9f"},
+                "timestamp_pst": {"$dateToString": {"format": "%Y-%m-%d %H:%M:%S", "date": "$time", "timezone": "America/Los_Angeles"}}
             }},
             {"$group": {
                 "_id": None,
@@ -97,11 +100,11 @@ def prompt3():
 
         # Print results
         output = (
-            f"Results in PST (Pacific Standard Time): {pst_now.strftime('%Y-%m-%d %H:%M:%S')}"
-            f"Average antmeter for fridge 1: {fridge1_average:.10f}"
-            f"Average antmeter for fridge 2: {fridge2_average:.10f}"
-            f"Average antmeter for fridge 3: {dishwasher_average:.10f}"
-            f"Overall average anmeter: {overall_average:.10f}"
+            f"\n\nResults in PST (Pacific Standard Time): {pst_now.strftime('%Y-%m-%d %H:%M:%S')}\n"
+            f"Average antmeter for fridge 1: {fridge1_average:.10f}\n"
+            f"Average antmeter for fridge 2: {fridge2_average:.10f}\n"
+            f"Average antmeter for fridge 3: {dishwasher_average:.10f}\n"
+            f"Overall average anmeter: {overall_average:.10f}\n"
         )
         return output
     except Exception as e:
