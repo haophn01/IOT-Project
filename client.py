@@ -39,8 +39,10 @@ def start_tcp_client():
             if user_message not in ['1', '2', '3', 'exit', '']:
                 print("Please enter 1, 2, 3 or exit.")
                 continue
+
             # Send the message to the server
-            myTCPSocket.send(bytearray(user_message, encoding='utf-8'))
+            if user_message  in ['1', '2', '3', 'exit', '']:
+                myTCPSocket.send(bytearray(user_message, encoding='utf-8'))
 
             # Receiving server's response (uppercased message)
             serverResponse = myTCPSocket.recv(maxBytesToReceive).decode('utf-8')

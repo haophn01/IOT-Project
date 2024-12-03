@@ -1,45 +1,13 @@
 import socket
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
+from datetime import datetime, timedelta
 from prompt1 import prompt1
-
-# Connect to MongoDB database
-def connect_to_mongo():
-    # Replace the uri string with your MongoDB deployment's connection string
-    # TODO: REPLACE WITH YOUR OWN CONNECTION STRING, DO NOT SHARE WITH ANYONE
-    uri = "mongodb+srv://hao:hao1234@cluster0.15uea.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
-
-    # Create a new client and connect to the server
-    client = MongoClient(uri, server_api=ServerApi('1'))
-
-    try:
-        # Test the connection
-        client.admin.command('ping')
-        print("Pinged your deployment. You successfully connected to MongoDB!")
-
-        # Specify the database and collection
-        # TODO: REPLACE WITH YOUR OWN DATABASE AND COLLECTION NAME
-        db = client['test']  # Replace with your database name
-        collection = db['MacandCheese_virtual']  # Replace with your collection name
-
-        # Test the collection
-        collection.find_one()  # This ensures the collection is accessible
-        return collection
-
-    except Exception as e:
-        print("Failed during MongoDB setup:")
-        print(e)
-        return None
-
+from prompt2 import prompt2
+from prompt3 import prompt3
 
 # Start the TCP server
-def start_tcp_server():
-    # Call the database MongoDB
-    collection = connect_to_mongo()
-    if collection is None:
-        print("MongoDB connection failed. Server will not start.")
-        return 
-        
+def start_tcp_server():        
     myTCPSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     try:
@@ -80,14 +48,15 @@ def start_tcp_server():
                 serverIsOn = False
             # TODO: Add your own logic here to handle each kind of query
             else:
-                # Send back the received message in uppercase
-                incomingSocket.send(bytearray(received_message.upper(), encoding='utf-8'))
                 if received_message == "1":
-                    prompt1()
+                    response = prompt1()
+                    incomingSocket.send(bytearray(response, encoding='utf-8'))
                 elif received_message == "2":
-                    pass
+                    response = prompt2()
+                    incomingSocket.send(bytearray(response, encoding='utf-8'))
                 elif received_message == "3":
-                    pass
+                    response = prompt3()
+                    incomingSocket.send(bytearray(response, encoding='utf-8'))
 
 
     except Exception as e:

@@ -73,11 +73,13 @@ def prompt1():
             if total_count > 0 else 0
         )
 
-        # Print results
-        print(f"Results in PST (Pacific Standard Time): {pst_now.strftime('%Y-%m-%d %H:%M:%S')}")
-        print(f"Average moisture for DHT11 - moisture: {dht11_average:.10f}")
-        print(f"Average moisture for sensor 3: {sensor3_average:.10f}")
-        print(f"Overall average moisture: {overall_average:.10f}")
-
+        # Format the results as a string
+        output = (
+            f"Results in PST (Pacific Standard Time): {pst_now.strftime('%Y-%m-%d %H:%M:%S')}\n"
+            f"Average moisture for DHT11 - moisture: {dht11_average:.10f}"
+            f"Average moisture for sensor 3: {sensor3_average:.10f}"
+            f"Overall average moisture: {overall_average:.10f}"
+        )
+        return output
     except Exception as e:
         print(f"Error: {e}")
