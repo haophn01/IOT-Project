@@ -151,6 +151,25 @@ def prompt3():
             if total_count > 0 else 0
         )
 
+        # Determine the variable with the highest consumption
+        max_consumption_metric = max(fridge1_metric_average, fridge2_metric_average, dishwasher_metric_average)
+        max_consumption_imperial = max(fridge1_imperial_average, fridge2_imperial_average, dishwasher_imperial_average)
+
+        if max_consumption_metric == fridge1_metric_average:
+            max_metric_device = "fridge 1"
+        elif max_consumption_metric == fridge2_metric_average:
+            max_metric_device = "fridge 2"
+        else:
+            max_metric_device = "dishwasher"
+
+        if max_consumption_imperial == fridge1_imperial_average:
+            max_imperial_device = "fridge 1"
+        elif max_consumption_imperial == fridge2_imperial_average:
+            max_imperial_device = "fridge 2"
+        else:
+            max_imperial_device = "dishwasher"
+
+        
         # Print results
         output = (
             f"\n\n---------------------------------------------------------------\n"
@@ -163,6 +182,8 @@ def prompt3():
             f"Average antmeter for dishwasher (Imperial): {dishwasher_imperial_average:.10f} BTU\n"
             f"Overall average antmeter (Metric): {overall_metric_average:.10f} kWh\n"
             f"Overall average antmeter (Imperial): {overall_imperial_average:.10f} BTU\n"
+            f"Highest consumption device (Metric): {max_metric_device} with {max_consumption_metric:.10f} kWh\n"
+            f"Highest consumption device (Imperial): {max_imperial_device} with {max_consumption_imperial:.10f} BTU\n"
             f"Total Records: {total_count}\n"
             f"---------------------------------------------------------------\n"
         )
