@@ -34,8 +34,36 @@ This project is an IoT data query system utilizes a tcp client-server architectu
 
 ```prompt1.py```: Handles the query for average moisture in the fridge.
 
-```prompt2.py```: Handles the query for average water consumption of the dishwasher.
+```prompt2.py```: Handles the query for the average water consumption of the dishwasher.
 
 ```prompt3.py```: Handles the query for electricity consumption comparison.
+
+***Prerequisites***
+- MongoDB 
+- Python 3.8 or higher
+- ```pymongo``` python package
+- ```pytz``` python package
+
+***Getting Started***
+
+**1. MongoDB Instance:**
+- Update the ```uri``` variable in ```prompt1.py```, ```prompt2.py```, ```prompt3.py``` files with your MongoDB database URI.
+
+
+
+**2. Running the Server:**
+- Navigate to the project directory (ie. ```cd "C:\Users\reynaoaguirre\Documents\Assignment8"```)
+- Start the server (ie ```python server.py```)
+- Enter server (private) IP and desired port number (ie ```0.0.0.0``` for local testing)
+- Now, the server will wait for client connections and handle queries using the database.
+
+
+
+**3. Running the Client (New Separate Terminal):**
+- Navigate to the project directory (ie. ```cd "C:\Users\reynaoaguirre\Documents\Assignment8"```)
+- Start the server (ie ```python client.py```)
+- Enter server (public) IP and desired port number (ie ```0.0.0.0``` for local testing)
+- Now, select desired query (```1```, ```2```, ```3```, or ```exit```)
+- View the server’s response and results to your query.
 
 
