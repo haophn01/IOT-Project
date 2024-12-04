@@ -120,19 +120,19 @@ def prompt3():
         result_dishwasher = list(data_collection.aggregate(dishwasher_query))
 
         # Extract averages and counts for fridge1
-        fridge1_metric_average = result_fridge1[0]['average-metric'] if result_fridge1 else 0
-        fridge1_imperial_average = result_fridge1[0]['average-imperial'] if result_fridge1 else 0
-        fridge1_count = result_fridge1[0]['count'] if result_fridge1 else 0
+        fridge1_metric_average = abs(result_fridge1[0]['average-metric']) if result_fridge1 else 0
+        fridge1_imperial_average = abs(result_fridge1[0]['average-imperial']) if result_fridge1 else 0
+        fridge1_count = abs(result_fridge1[0]['count']) if result_fridge1 else 0
 
         # Extract averages and counts for fridge2
-        fridge2_metric_average = result_fridge2[0]['average-metric'] if result_fridge2 else 0
-        fridge2_imperial_average = result_fridge2[0]['average-imperial'] if result_fridge2 else 0
-        fridge2_count = result_fridge2[0]['count'] if result_fridge2 else 0
+        fridge2_metric_average = abs(result_fridge2[0]['average-metric']) if result_fridge2 else 0
+        fridge2_imperial_average = abs(result_fridge2[0]['average-imperial']) if result_fridge2 else 0
+        fridge2_count = abs(result_fridge2[0]['count']) if result_fridge2 else 0
 
         # Extract averages and counts for dishwasher
-        dishwasher_metric_average = result_dishwasher[0]['average-metric'] if result_dishwasher else 0
-        dishwasher_imperial_average = result_dishwasher[0]['average-imperial'] if result_dishwasher else 0
-        dishwasher_count = result_dishwasher[0]['count'] if result_dishwasher else 0
+        dishwasher_metric_average = abs(result_dishwasher[0]['average-metric']) if result_dishwasher else 0
+        dishwasher_imperial_average = abs(result_dishwasher[0]['average-imperial']) if result_dishwasher else 0
+        dishwasher_count = abs(result_dishwasher[0]['count']) if result_dishwasher else 0
 
         # Calculate overall averages
         total_count = fridge1_count + fridge2_count + dishwasher_count
