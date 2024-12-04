@@ -2,6 +2,7 @@ from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 from datetime import datetime, timedelta
 import pytz
+from timezonefinder import TimezoneFinder
 
 def prompt1():
     # Connect to MongoDB
@@ -11,15 +12,48 @@ def prompt1():
     try:
         # Access database and collection
         db = client['test']  # Replace with your database name
-        collection = db['MacandCheese_virtual']  # Replace with your collection name
+        metadata_collection = db['MacandCheese_metadata'] 
+        data_collection = db['MacandCheese_virtual'] 
 
-        # # Calculate the time three hours ago in PST
+        metadata = metadata_collection.find_one({
+            "customAttributes.name": {"$in": ["Fridge", "Fridge2"]}
+        })
+        if not metadata:
+            print("Warning: No metadata found for any fridge. Using defaults.")
+            return "No metadata found for any fridge (Fridge or Fridge2)."
+        
+
+        # Debugging to identify field structure
+        # print("Metadata Debugging:")
+        # print(metadata)
+
+        # Extract latitude and longitude
+        latitude_field = metadata.get("latitude")
+        longitude_field = metadata.get("longitude")
+
+        # Handle cases where latitude/longitude is an integer or a nested dictionary
+        try:
+            latitude = float(latitude_field["$numberInt"]) if isinstance(latitude_field, dict) else float(latitude_field)
+            longitude = float(longitude_field["$numberInt"]) if isinstance(longitude_field, dict) else float(longitude_field)
+        except (TypeError, KeyError, ValueError) as e:
+            print(f"Error parsing latitude/longitude: {e}")
+            latitude = None
+            longitude = None
+
+        # Use TimezoneFinder to determine the time zone
+        if latitude is not None and longitude is not None:
+            tf = TimezoneFinder()
+            device_time_zone = tf.timezone_at(lat=latitude, lng=longitude) or "America/Los_Angeles"
+        else:
+            device_time_zone = "America/Los_Angeles"
+
+
+        pst = pytz.timezone("America/Los_Angeles")
+
+        # Calculate the time three hours ago in PST
         utc_now = datetime.utcnow()
-        pst = pytz.timezone('America/Los_Angeles')
         pst_now = utc_now.astimezone(pst)
         three_hours_ago_pst = pst_now - timedelta(hours=3)
-
-        # # Convert PST time to UTC for MongoDB query
         three_hours_ago_utc = three_hours_ago_pst.astimezone(pytz.utc)
 
         # Query for DHT11 - moisture
@@ -57,8 +91,8 @@ def prompt1():
         ]
 
         # Run the pipelines
-        result_dht11 = list(collection.aggregate(pipeline_dht11))
-        result_sensor3 = list(collection.aggregate(pipeline_sensor3))
+        result_dht11 = list(data_collection.aggregate(pipeline_dht11))
+        result_sensor3 = list(data_collection.aggregate(pipeline_sensor3))
 
         # Extract averages and counts for DHT11 - moisture
         dht11_average = result_dht11[0]['average'] if result_dht11 else 0
@@ -81,8 +115,11 @@ def prompt1():
             f"Average moisture for DHT11 - moisture (RH%): {dht11_average:.10f}\n"
             f"Average moisture for sensor 3 (RH%): {sensor3_average:.10f}\n"
             f"Overall average moisture (RH%): {overall_average:.10f}\n"
-            f"Total Records: {dht11_count}\n"
+            f"Total Records: {dht11_count + sensor3_count}\n"
         )
         return output
+    
+    except KeyError as e:
+        return f"KeyError: Missing field in metadata: {e}"
     except Exception as e:
         print(f"Error: {e}")
