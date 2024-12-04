@@ -41,8 +41,9 @@ This project is an IoT data query system utilizes a tcp client-server architectu
 ***Prerequisites***
 - MongoDB 
 - Python 3.8 or higher
-- ```pymongo``` python package
-- ```pytz``` python package
+- ```pymongo``` python package [```pip install pymongo```]
+- ```pytz``` python package [```pip install pymongo pytz```]
+- ```timezonefinder``` python package [```pip install timezonefinder```]
 
 ***Getting Started***
 
