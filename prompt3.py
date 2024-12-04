@@ -30,29 +30,33 @@ def prompt3():
                 "time": {"$gte": three_hours_ago_utc}
             }},
             {"$addFields": {
-                "numeric-value": {"$toDouble": "$payload.ACS712 - Anmeter"},
-                "timestamp_pst": {"$dateToString": {"format": "%Y-%m-%d %H:%M:%S", "date": "$time", "timezone": "America/Los_Angeles"}}
+               "numeric-value-metric": {"$toDouble": "$payload.ACS712 - Anmeter"},
+               "numeric-value-imperial": {"$multiply": [{"$toDouble": "$payload.ACS712 - Anmeter"}, 3412.14]},  # Convert kWh to BTU
+               "timestamp_pst": {"$dateToString": {"format": "%Y-%m-%d %H:%M:%S", "date": "$time", "timezone": "America/Los_Angeles"}}
             }},
             {"$group": {
                 "_id": None,
-                "average": {"$avg": "$numeric-value"},
+                "average-metric": {"$avg": "$numeric-value-metric"},
+                "average-imperial": {"$avg": "$numeric-value-imperial"},
                 "count": {"$sum": 1}
             }}
         ]
 
-        # Query for fridge1 - anmeter
+        # Query for fridge2 - anmeter
         fridge2_query = [
             {"$match": {
                 "payload.sensor 2 637f4c4f-d074-4f27-9bfc-72d7231211ec": {"$exists": True},
                 "time": {"$gte": three_hours_ago_utc}
             }},
             {"$addFields": {
-                "numeric-value": {"$toDouble": "$payload.sensor 2 637f4c4f-d074-4f27-9bfc-72d7231211ec"},
+                "numeric-value-metric": {"$toDouble": "$payload.sensor 2 637f4c4f-d074-4f27-9bfc-72d7231211ec"},
+                "numeric-value-imperial": {"$multiply": [{"$toDouble": "$payload.sensor 2 637f4c4f-d074-4f27-9bfc-72d7231211ec"}, 3412.14]},  # Convert kWh to BTU
                 "timestamp_pst": {"$dateToString": {"format": "%Y-%m-%d %H:%M:%S", "date": "$time", "timezone": "America/Los_Angeles"}}
             }},
             {"$group": {
                 "_id": None,
-                "average": {"$avg": "$numeric-value"},
+                "average-metric": {"$avg": "$numeric-value-metric"},
+                "average-imperial": {"$avg": "$numeric-value-imperial"},
                 "count": {"$sum": 1}
             }}
         ]
@@ -64,12 +68,14 @@ def prompt3():
                 "time": {"$gte": three_hours_ago_utc}
             }},
             {"$addFields": {
-                "numeric-value": {"$toDouble": "$payload.sensor 2 956b7932-b559-4cfc-8ba6-153d69083a9f"},
+                "numeric-value-metric": {"$toDouble": "$payload.sensor 2 956b7932-b559-4cfc-8ba6-153d69083a9f"},
+                "numeric-value-imperial": {"$multiply": [{"$toDouble": "$payload.sensor 2 956b7932-b559-4cfc-8ba6-153d69083a9f"}, 3412.14]},  # Convert kWh to BTU
                 "timestamp_pst": {"$dateToString": {"format": "%Y-%m-%d %H:%M:%S", "date": "$time", "timezone": "America/Los_Angeles"}}
             }},
             {"$group": {
                 "_id": None,
-                "average": {"$avg": "$numeric-value"},
+                "average-metric": {"$avg": "$numeric-value-metric"},
+                "average-imperial": {"$avg": "$numeric-value-imperial"},
                 "count": {"$sum": 1}
             }}
         ]
@@ -80,32 +86,51 @@ def prompt3():
         result_dishwasher = list(collection.aggregate(dishwasher_query))
 
         # Extract averages and counts for fridge1
-        fridge1_average = result_fridge1[0]['average'] if result_fridge1 else 0
+        fridge1_metric_average = result_fridge1[0]['average-metric'] if result_fridge1 else 0
+        fridge1_imperial_average = result_fridge1[0]['average-imperial'] if result_fridge1 else 0
         fridge1_count = result_fridge1[0]['count'] if result_fridge1 else 0
 
         # Extract averages and counts for fridge2
-        fridge2_average = result_fridge2[0]['average'] if result_fridge2 else 0
+        fridge2_metric_average = result_fridge2[0]['average-metric'] if result_fridge2 else 0
+        fridge2_imperial_average = result_fridge2[0]['average-imperial'] if result_fridge2 else 0
         fridge2_count = result_fridge2[0]['count'] if result_fridge2 else 0
 
         # Extract averages and counts for dishwasher
-        dishwasher_average = result_dishwasher[0]['average'] if result_dishwasher else 0
+        dishwasher_metric_average = result_dishwasher[0]['average-metric'] if result_dishwasher else 0
+        dishwasher_imperial_average = result_dishwasher[0]['average-imperial'] if result_dishwasher else 0
         dishwasher_count = result_dishwasher[0]['count'] if result_dishwasher else 0
 
         # Calculate overall averages
         total_count = fridge1_count + fridge2_count + dishwasher_count
-        overall_average = (
-            (fridge1_average * fridge1_count +  fridge2_average * fridge2_count + dishwasher_average * dishwasher_count) / total_count
+
+        overall_metric_average = (
+            (fridge1_metric_average * fridge1_count +
+            fridge2_metric_average * fridge2_count +
+            dishwasher_metric_average * dishwasher_count) / total_count
+            if total_count > 0 else 0
+        )
+
+        overall_imperial_average = (
+            (fridge1_imperial_average * fridge1_count +
+            fridge2_imperial_average * fridge2_count +
+            dishwasher_imperial_average * dishwasher_count) / total_count
             if total_count > 0 else 0
         )
 
         # Print results
         output = (
             f"\n\nResults in PST (Pacific Standard Time): {pst_now.strftime('%Y-%m-%d %H:%M:%S')}\n"
-            f"Average antmeter for fridge 1: {fridge1_average:.10f}\n"
-            f"Average antmeter for fridge 2: {fridge2_average:.10f}\n"
-            f"Average antmeter for fridge 3: {dishwasher_average:.10f}\n"
-            f"Overall average anmeter: {overall_average:.10f}\n"
+            f"Average antmeter for fridge 1 (Metric): {fridge1_metric_average:.10f} kWh\n"
+            f"Average antmeter for fridge 1 (Imperial): {fridge1_imperial_average:.10f} BTU\n"
+            f"Average antmeter for fridge 2 (Metric): {fridge2_metric_average:.10f} kWh\n"
+            f"Average antmeter for fridge 2 (Imperial): {fridge2_imperial_average:.10f} BTU\n"
+            f"Average antmeter for dishwasher (Metric): {dishwasher_metric_average:.10f} kWh\n"
+            f"Average antmeter for dishwasher (Imperial): {dishwasher_imperial_average:.10f} BTU\n"
+            f"Overall average antmeter (Metric): {overall_metric_average:.10f} kWh\n"
+            f"Overall average antmeter (Imperial): {overall_imperial_average:.10f} BTU\n"
+            f"Total Records: {total_count}\n"
         )
+
         return output
     except Exception as e:
         print(f"Error: {e}")

@@ -29,12 +29,14 @@ def prompt2():
                 "time": {"$gte": three_hours_ago_utc}
             }},
             {"$addFields": {
-                "numeric-value": {"$toDouble": "$payload.YF-S201 - watersensor"},
+                "numeric-value-metric": {"$toDouble": "$payload.YF-S201 - watersensor"},
+                "numeric-value-imperial": {"$multiply": [{"$toDouble": "$payload.YF-S201 - watersensor"}, 0.264172]},  # Conversion from liters to gallons
                 "timestamp_pst": {"$dateToString": {"format": "%Y-%m-%d %H:%M:%S", "date": "$time", "timezone": "America/Los_Angeles"}}
             }},
             {"$group": {
                 "_id": None,
-                "average": {"$avg": "$numeric-value"},
+                "average-metric": {"$avg": "$numeric-value-metric"},
+                "average-imperial": {"$avg": "$numeric-value-imperial"},
                 "count": {"$sum": 1}
             }}
         ]
@@ -42,23 +44,25 @@ def prompt2():
 
         # Run the pipelines
         result_watersensor = list(collection.aggregate(pipeline_watersensor))
-        # Extract averages and counts for DHT11 - moisture
-        dht11_average = result_watersensor[0]['average'] if result_watersensor else 0
-        dht11_count = result_watersensor[0]['count'] if result_watersensor else 0
+    
+        average_metric = result_watersensor[0]['average-metric'] if result_watersensor else 0
+        average_imperial = result_watersensor[0]['average-imperial'] if result_watersensor else 0
+        count = result_watersensor[0]['count'] if result_watersensor else 0
 
 
         # Calculate overall averages
-        total_count = dht11_count 
+        total_count = count 
         overall_average = (
-            (dht11_average * dht11_count ) / total_count
+            (average_imperial * count ) / total_count
             if total_count > 0 else 0
         )
 
         # Print results
         output = (
-        f"\n\nResults in PST (Pacific Standard Time): {pst_now.strftime('%Y-%m-%d %H:%M:%S')}\n"
-        f"Average water consumption for the dishwasher: {dht11_average:.10f}\n"
-        f"Overall average: {overall_average:.10f}\n"
+            f"\n\nResults in PST (Pacific Standard Time): {pst_now.strftime('%Y-%m-%d %H:%M:%S')}\n"
+            f"Average water consumption (Metric - Liters): {average_metric:.4f} L\n"
+            f"Average water consumption (Imperial - Gallons): {average_imperial:.4f} gal\n"
+            f"Total Records: {count}\n"
         )
         return output
 
