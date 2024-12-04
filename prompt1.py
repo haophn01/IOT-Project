@@ -111,11 +111,13 @@ def prompt1():
 
         # Format the results as a string
         output = (
-            f"\nResults in PST (Pacific Standard Time): {pst_now.strftime('%Y-%m-%d %H:%M:%S')}\n"
+            f"\n\n---------------------------------------------------------------\n"
+            f"Results in PST (Pacific Standard Time): {pst_now.strftime('%Y-%m-%d %H:%M:%S')}\n"
             f"Average moisture for DHT11 - moisture (RH%): {dht11_average:.10f}\n"
             f"Average moisture for sensor 3 (RH%): {sensor3_average:.10f}\n"
             f"Overall average moisture (RH%): {overall_average:.10f}\n"
             f"Total Records: {dht11_count + sensor3_count}\n"
+            f"---------------------------------------------------------------\n"
         )
         return output
     
