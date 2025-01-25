@@ -1,10 +1,10 @@
-**Assignment 7 : Build an End-to-End IoT System**
+**End-to-End IoT System**
 <br />
 Hao Phan and Reyna Aguirre
 <br />
 <br />
 
-***Overview of Assignment***
+***Overview***
 
 This project is an IoT data query system utilizes a tcp client-server architecture (used in assignment 6)  to process our specific queries related to the smart home devices. Our system fetches data from our MongoDB database (assignment 7) to then provide insights about:
 
